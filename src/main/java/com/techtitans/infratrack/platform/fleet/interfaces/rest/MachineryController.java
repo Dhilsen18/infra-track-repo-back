@@ -6,6 +6,7 @@ import com.techtitans.infratrack.platform.fleet.domain.model.queries.GetAllMachi
 import com.techtitans.infratrack.platform.fleet.domain.model.queries.GetMachineryByIdQuery;
 import com.techtitans.infratrack.platform.fleet.interfaces.rest.resources.CreateMachineryResource;
 import com.techtitans.infratrack.platform.fleet.interfaces.rest.resources.MachineryResource;
+import com.techtitans.infratrack.platform.fleet.interfaces.rest.resources.UpdateMachineryResource;
 import com.techtitans.infratrack.platform.fleet.interfaces.rest.transform.MachineryResourceFromEntityAssembler;
 import com.techtitans.infratrack.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,6 +54,17 @@ public class MachineryController {
                 result,
                 MachineryResourceFromEntityAssembler::toResourceFromEntity,
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{machineryId}")
+    public ResponseEntity<?> updateMachinery(@PathVariable Long machineryId, @RequestBody UpdateMachineryResource resource) {
+        var command = MachineryResourceFromEntityAssembler.toUpdateCommandFromResource(machineryId, resource);
+        var result = machineryCommandService.handle(command);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                MachineryResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.OK
         );
     }
 }
