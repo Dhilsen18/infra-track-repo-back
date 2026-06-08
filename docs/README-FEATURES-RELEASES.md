@@ -55,7 +55,7 @@ Cada Release en GitHub marca ese punto agrupado del proyecto.
 
 `main` al final = mismo contenido que `v0.19.0`.
 
-> **Site-management:** REST de obras en **v0.17.0**. v0.15 y v0.16 = dominio/persistencia.
+> **Site-management:** REST de obras en **v0.19.0**. v0.17 y v0.18 = dominio/persistencia.
 
 ---
 
@@ -67,55 +67,72 @@ Trabajan **en paralelo** preparando su parte, pero los **merge a `main` van en o
 |------------|-----|---------------------|------|
 | **Integrante 1** | Líder / DevOps | Bootstrap + `release/0.1.0-shared` | `v0.1.0` |
 | **Integrante 2** | IAM | `sign-up` → `sign-in` → `list-users` → `list-roles` | `v0.2.0`–`v0.5.0` |
-| **Integrante 3** | Fleet (parte 1) | `create-operator` → `list-operators` → `list-machinery` → `create-machinery` → `update-machinery` → `register-iot-node` | `v0.6.0`–`v0.11.0` |
-| **Integrante 4** | Fleet + Monitoring | `create-maintenance-record` → `list-telemetry-data` → `list-alerts` → `create-alert` → `acknowledge-alert` | `v0.12.0`–`v0.16.0` |
+| **Integrante 3** | Fleet (parte 1) | `create-operator` → … → `register-iot-node` | `v0.6.0`–`v0.11.0` |
+| **Integrante 4** | Fleet + Monitoring | `create-maintenance-record` → … → `acknowledge-alert` | `v0.12.0`–`v0.16.0` |
 | **Integrante 5** | Site Management | `list-worksites` → `create-staff-members` → `assign-transport-to-worksite` | `v0.17.0`–`v0.19.0` |
-
-### Responsabilidades extra
 
 | Integrante | También hace |
 |------------|--------------|
-| **1** | Crear repo GitHub del equipo, proteger `main`, revisar PRs, publicar Releases |
-| **2** | Probar sign-up, sign-in, users, roles en Swagger |
-| **3** | Probar create/list operators, list/create/update machinery, iotNodes |
-| **4** | Probar maintenance, telemetry, list/create/ack alerts |
-| **5** | Probar worksites (REST completo en v0.19) |
-
-### Calendario sugerido (19 entregas)
-
-| Semana | Quién | Rama | Release (tag agrupa `main`) |
-|--------|-------|------|------------------------------|
-| 1 | Int. 1 | `release/0.1.0-shared` | `v0.1.0` |
-| 2 | Int. 2 | `feature/sign-up` | `v0.2.0` |
-| 3 | Int. 2 | `feature/sign-in` | `v0.3.0` |
-| 4 | Int. 2 | `feature/list-users` | `v0.4.0` |
-| 5 | Int. 2 | `feature/list-roles` | `v0.5.0` |
-| 6 | Int. 3 | `feature/create-operator` | `v0.6.0` |
-| 7 | Int. 3 | `feature/list-operators` | `v0.7.0` |
-| 8 | Int. 3 | `feature/list-machinery` | `v0.8.0` |
-| 9 | Int. 3 | `feature/create-machinery` | `v0.9.0` |
-| 10 | Int. 3 | `feature/update-machinery` | `v0.10.0` |
-| 11 | Int. 3 | `feature/register-iot-node` | `v0.11.0` |
-| 12 | Int. 4 | `feature/create-maintenance-record` | `v0.12.0` |
-| 13 | Int. 4 | `feature/list-telemetry-data` | `v0.13.0` |
-| 14 | Int. 4 | `feature/list-alerts` | `v0.14.0` |
-| 15 | Int. 4 | `feature/create-alert` | `v0.15.0` |
-| 16 | Int. 4 | `feature/acknowledge-alert` | `v0.16.0` |
-| 17 | Int. 5 | `feature/list-worksites` | `v0.17.0` |
-| 18 | Int. 5 | `feature/create-staff-members` | `v0.18.0` |
-| 19 | Int. 5 | `feature/assign-transport-to-worksite` | `v0.19.0` |
+| **1** | Crear repo, revisar PRs, **merge a main**, **tag + GitHub Release** |
+| **2–5** | Copiar archivos, probar Swagger, abrir PR |
 
 ---
 
-## 3. Paso 0 — Crear el repo nuevo (Integrante 1)
+## 3. Conceptos clave — Rama, Merge, Tag, Release
 
-### 3.1 En GitHub
+| Concepto | Qué es | Quién |
+|----------|--------|-------|
+| **Rama `feature/*`** | Código de **un** endpoint | Int. 2, 3, 4 o 5 |
+| **PR** | Pedir unir tu rama → `main` | Quien hizo la feature |
+| **Merge** | Aprobar PR; código entra a `main` | **Integrante 1** |
+| **Tag `v0.x.0`** | Marca Git del `main` agrupado | **Integrante 1** (terminal) |
+| **GitHub Release** | Publicación formal del tag | **Integrante 1** (web) |
 
-1. Crear repositorio vacío: `InfraTrack-Backend` (sin README, sin .gitignore).
-2. Invitar a los 4 compañeros como colaboradores.
-3. (Opcional) Proteger rama `main`: Settings → Branches → require PR.
+### Flujo completo (repítelo en cada entrega)
 
-### 3.2 En tu PC (PowerShell)
+```
+1. Copiar archivos de ESTA feature (sección 6)
+2. mvn spring-boot:run + probar Swagger
+3. git commit + git push (rama feature)
+4. Abrir PR → main
+5. Integrante 1 revisa y MERGEA
+6. git tag -a v0.X.0 + git push origin v0.X.0
+7. GitHub → Releases → Publish v0.X.0
+8. Siguiente persona espera main actualizado
+```
+
+**Merge ≠ Release:** merge integra código; release publica la versión agrupada en GitHub.
+
+**El tag agrupa** todo lo que ya está en `main` (shared + IAM + … + tu feature), no solo tu diff.
+
+---
+
+## 4. ¿Estará funcional?
+
+**Sí**, si:
+
+1. Copian **en orden** (no saltar v0.6 antes de v0.5).
+2. Copian **solo** los archivos de esa entrega (sección 6).
+3. MySQL corre con base `infratrack-os`.
+4. Pasan `mvn compile` antes del PR.
+
+| Después de | Qué funciona en Swagger |
+|------------|-------------------------|
+| v0.1.0 | App arranca (shared) |
+| v0.2.0–v0.5.0 | Auth, users, roles |
+| v0.6.0–v0.11.0 | Operators, machinery, iotNodes |
+| v0.12.0–v0.16.0 | Maintenance, telemetry, alerts |
+| v0.19.0 | **Todo** incluido `/worksites` |
+
+El repo [infra-track-repo-back](https://github.com/Dhilsen18/infra-track-repo-back.git) ya tiene **todas las ramas listas** — ustedes replican el proceso en su repo del curso.
+
+---
+
+## 5. Paso 0 — Crear repo del equipo (Integrante 1)
+
+1. GitHub → repo vacío `InfraTrack-Backend` (sin README).
+2. Invitar a los 4 compañeros.
+3. Local:
 
 ```powershell
 mkdir InfraTrack-Backend-Equipo
@@ -124,408 +141,394 @@ git init
 git branch -M main
 ```
 
-### 3.3 Copiar archivos base (desde el repo de referencia)
-
-Copiar **solo** estos archivos/carpetas (Explorador de archivos o `Copy-Item`):
+4. Copiar **solo** bootstrap desde referencia:
 
 ```
-pom.xml
-mvnw
-mvnw.cmd
-.mvn/                    (carpeta completa)
-.gitignore
-.gitattributes
-.env.example
-LICENSE.md
-README.md                (opcional, el del proyecto)
+pom.xml, mvnw, mvnw.cmd, .mvn/, .gitignore, .gitattributes, .env.example, LICENSE.md
 ```
 
-**No copiar aún** `src/main/java/.../iam`, `fleet`, `monitoring`, `sitemanagement`.
+5. `git add .` → `commit` → `push -u origin main`
 
-### 3.4 Primer commit y push
+6. Clonar referencia en otra carpeta:
 
 ```powershell
-git add .
-git commit -m "chore: project bootstrap"
-git remote add origin https://github.com/TU-ORG/InfraTrack-Backend.git
-git push -u origin main
+git clone https://github.com/Dhilsen18/infra-track-repo-back.git ..\InfraTrack-Referencia
 ```
 
 ---
 
-## 4. Plantilla repetida por cada entrega
+## 6. Qué copiar en CADA rama
 
-Cada integrante sigue ** estos pasos** cuando le toque su turno (después del merge anterior):
+**Prefijo:** `src/main/java/com/techtitans/infratrack/platform/` → abreviado **`.../`**
 
-### A) Actualizar `main`
+**Recursos (solo v0.1.0):** `src/main/resources/application*.properties`, `messages*.properties`, `src/test/.../InfraTrackWebServiceApplicationTests.java`
+
+**Plantilla por entrega:**
 
 ```powershell
-git checkout main
-git pull origin main
+git checkout main && git pull
+git checkout -b feature/NOMBRE
+# copiar archivos de abajo desde ..\InfraTrack-Referencia
+mvn compile && mvn spring-boot:run
+git add . && git commit -m "feat(...): ..."
+git push -u origin feature/NOMBRE
+# PR → merge (Int.1) → tag v0.X.0 → Release
 ```
 
-### B) Crear rama
+---
+
+### v0.1.0 · `release/0.1.0-shared` · **Int. 1**
+
+```
+.../shared/                              (carpeta completa)
+.../InfraTrackWebServiceApplication.java
++ recursos y test
+```
+
+---
+
+### v0.2.0 · `feature/sign-up` · **Int. 2**
+
+Esperar: v0.1.0 en main.
+
+```
+.../iam/   (parcial — archivos de sign-up, ver lista en repo referencia)
+```
+
+Lista exacta:
+
+```
+.../iam/application/commandservices/RoleCommandService.java
+.../iam/application/commandservices/UserCommandService.java
+.../iam/application/internal/commandservices/RoleCommandServiceImpl.java
+.../iam/application/internal/commandservices/UserCommandServiceImpl.java
+.../iam/application/internal/eventhandlers/ApplicationReadyEventHandler.java
+.../iam/application/internal/outboundservices/hashing/HashingService.java
+.../iam/domain/model/aggregates/User.java
+.../iam/domain/model/commands/SeedRolesCommand.java
+.../iam/domain/model/commands/SignUpCommand.java
+.../iam/domain/model/entities/Role.java
+.../iam/domain/model/valueobjects/Roles.java
+.../iam/domain/repositories/RoleRepository.java
+.../iam/domain/repositories/UserRepository.java
+.../iam/infrastructure/hashing/bcrypt/BCryptHashingService.java
+.../iam/infrastructure/hashing/bcrypt/services/HashingServiceImpl.java
+.../iam/infrastructure/persistence/jpa/adapters/RoleRepositoryImpl.java
+.../iam/infrastructure/persistence/jpa/adapters/UserRepositoryImpl.java
+.../iam/infrastructure/persistence/jpa/assemblers/RolePersistenceAssembler.java
+.../iam/infrastructure/persistence/jpa/assemblers/UserPersistenceAssembler.java
+.../iam/infrastructure/persistence/jpa/entities/RolePersistenceEntity.java
+.../iam/infrastructure/persistence/jpa/entities/UserPersistenceEntity.java
+.../iam/infrastructure/persistence/jpa/repositories/RolePersistenceRepository.java
+.../iam/infrastructure/persistence/jpa/repositories/UserPersistenceRepository.java
+.../iam/interfaces/acl/IamContextFacade.java
+.../iam/interfaces/rest/SignUpController.java
+.../iam/interfaces/rest/resources/SignUpResource.java
+.../iam/interfaces/rest/resources/UserResource.java
+.../iam/interfaces/rest/transform/SignUpCommandFromResourceAssembler.java
+.../iam/interfaces/rest/transform/UserResourceFromEntityAssembler.java
+```
+
+**Probar:** POST `/authentication/sign-up`
+
+---
+
+### v0.3.0 · `feature/sign-in` · **Int. 2**
+
+```
+.../iam/domain/model/commands/SignInCommand.java
+.../iam/application/internal/outboundservices/tokens/TokenService.java
+.../iam/infrastructure/tokens/jwt/BearerTokenService.java
+.../iam/infrastructure/tokens/jwt/services/TokenServiceImpl.java
+.../iam/infrastructure/authorization/sfs/          (carpeta completa)
+.../iam/interfaces/rest/SignInController.java
+.../iam/interfaces/rest/resources/AuthenticatedUserResource.java
+.../iam/interfaces/rest/resources/SignInResource.java
+.../iam/interfaces/rest/transform/AuthenticatedUserResourceFromEntityAssembler.java
+.../iam/interfaces/rest/transform/SignInCommandFromResourceAssembler.java
+```
+
+**Probar:** POST `/authentication/sign-in` → token JWT
+
+---
+
+### v0.4.0 · `feature/list-users` · **Int. 2**
+
+```
+.../iam/application/queryservices/UserQueryService.java
+.../iam/application/internal/queryservices/UserQueryServiceImpl.java
+.../iam/domain/model/queries/GetAllUsersQuery.java
+.../iam/domain/model/queries/GetUserByIdQuery.java
+.../iam/domain/model/queries/GetUserByUsernameQuery.java
+.../iam/interfaces/rest/UsersController.java
+```
+
+**Probar:** GET `/users` (con Bearer)
+
+---
+
+### v0.5.0 · `feature/list-roles` · **Int. 2**
+
+```
+.../iam/application/queryservices/RoleQueryService.java
+.../iam/application/internal/queryservices/RoleQueryServiceImpl.java
+.../iam/domain/model/queries/GetAllRolesQuery.java
+.../iam/domain/model/queries/GetRoleByNameQuery.java
+.../iam/interfaces/rest/RolesController.java
+.../iam/interfaces/rest/resources/RoleResource.java
+.../iam/interfaces/rest/transform/RoleResourceFromEntityAssembler.java
+```
+
+**Probar:** GET `/roles`
+
+---
+
+### v0.6.0 · `feature/create-operator` · **Int. 3**
+
+```
+.../fleet/domain/model/aggregates/FleetOperator.java
+.../fleet/domain/model/commands/CreateFleetOperatorCommand.java
+.../fleet/domain/model/valueobjects/OperatorStatus.java
+.../fleet/domain/repositories/FleetOperatorRepository.java
+.../fleet/application/commandservices/FleetOperatorCommandService.java
+.../fleet/application/internal/commandservices/FleetOperatorCommandServiceImpl.java
+.../fleet/infrastructure/persistence/jpa/entities/FleetOperatorPersistenceEntity.java
+.../fleet/infrastructure/persistence/jpa/repositories/FleetOperatorPersistenceRepository.java
+.../fleet/infrastructure/persistence/jpa/adapters/FleetOperatorRepositoryImpl.java
+.../fleet/infrastructure/persistence/jpa/assemblers/FleetOperatorPersistenceAssembler.java
+.../fleet/interfaces/rest/OperatorsController.java
+.../fleet/interfaces/rest/resources/OperatorResource.java
+.../fleet/interfaces/rest/resources/CreateOperatorResource.java
+.../fleet/interfaces/rest/transform/OperatorResourceFromEntityAssembler.java
+```
+
+**Probar:** POST `/operators`
+
+---
+
+### v0.7.0 · `feature/list-operators` · **Int. 3**
+
+```
+.../fleet/domain/model/queries/GetAllFleetOperatorsQuery.java
+.../fleet/domain/model/queries/GetFleetOperatorByIdQuery.java
+.../fleet/application/queryservices/FleetOperatorQueryService.java
+.../fleet/application/internal/queryservices/FleetOperatorQueryServiceImpl.java
+.../fleet/interfaces/rest/OperatorsController.java    ← reemplazar (GET+POST)
+```
+
+**Probar:** GET `/operators`
+
+---
+
+### v0.8.0 · `feature/list-machinery` · **Int. 3**
+
+```
+.../fleet/domain/model/aggregates/Machinery.java
+.../fleet/domain/model/queries/GetAllMachineryQuery.java
+.../fleet/domain/model/queries/GetMachineryByIdQuery.java
+.../fleet/domain/model/valueobjects/FuelType.java
+.../fleet/domain/model/valueobjects/MachineryStatus.java
+.../fleet/domain/repositories/MachineryRepository.java
+.../fleet/application/queryservices/MachineryQueryService.java
+.../fleet/application/internal/queryservices/MachineryQueryServiceImpl.java
+.../fleet/infrastructure/persistence/jpa/entities/MachineryPersistenceEntity.java
+.../fleet/infrastructure/persistence/jpa/repositories/MachineryPersistenceRepository.java
+.../fleet/infrastructure/persistence/jpa/adapters/MachineryRepositoryImpl.java
+.../fleet/infrastructure/persistence/jpa/assemblers/MachineryPersistenceAssembler.java
+.../fleet/interfaces/rest/MachineryController.java    ← solo GET
+.../fleet/interfaces/rest/resources/MachineryResource.java
+.../fleet/interfaces/rest/transform/MachineryResourceFromEntityAssembler.java
+```
+
+**Probar:** GET `/machinery`
+
+---
+
+### v0.9.0 · `feature/create-machinery` · **Int. 3**
+
+```
+.../fleet/domain/model/commands/CreateMachineryCommand.java
+.../fleet/domain/model/commands/UpdateMachineryCommand.java
+.../fleet/application/commandservices/MachineryCommandService.java
+.../fleet/application/internal/commandservices/MachineryCommandServiceImpl.java
+.../fleet/interfaces/rest/resources/CreateMachineryResource.java
+.../fleet/interfaces/rest/MachineryController.java    ← GET+POST
+```
+
+**Probar:** POST `/machinery`
+
+---
+
+### v0.10.0 · `feature/update-machinery` · **Int. 3**
+
+```
+.../fleet/interfaces/rest/resources/UpdateMachineryResource.java
+.../fleet/interfaces/rest/MachineryController.java    ← GET+POST+PUT completo
+```
+
+**Probar:** PUT `/machinery/{id}`
+
+---
+
+### v0.11.0 · `feature/register-iot-node` · **Int. 3**
+
+En referencia:
 
 ```powershell
-git checkout -b feature/NOMBRE-DE-LA-RAMA
-# Ejemplo: git checkout -b feature/list-operators
+git diff feature/update-machinery..feature/register-iot-node --name-only
 ```
 
-### C) Copiar archivos de ESTA entrega
+**Probar:** GET/POST `/iotNodes`
 
-Ver sección **5** (lista por integrante).  
-Origen: repo de referencia, rama `main` o la rama feature correspondiente en [infra-track-repo-back](https://github.com/Dhilsen18/infra-track-repo-back.git).
+---
 
-**Atajo con git** (si clonaron el repo de referencia):
+### v0.12.0 · `feature/create-maintenance-record` · **Int. 4**
 
 ```powershell
-# Desde la carpeta del repo NUEVO del equipo
-git checkout REFERENCIA/main -- ruta/archivo1.java ruta/archivo2.java
-# REFERENCIA = remote apuntando al repo con código completo
+git diff feature/register-iot-node..feature/create-maintenance-record --name-only
 ```
 
-### D) Compilar y probar
+Incluye `.../fleet/application/acl/`, `.../fleet/interfaces/acl/`, seeder fleet.
+
+**Probar:** GET/POST `/maintenanceRecords`
+
+---
+
+### v0.13.0 · `feature/list-telemetry-data` · **Int. 4**
 
 ```powershell
-$env:DATABASE_URL="localhost"
-$env:DATABASE_PORT="3306"
-$env:DATABASE_NAME="infratrack-os"
-$env:DATABASE_USER="root"
-$env:DATABASE_PASSWORD="admin123"
-$env:PORT="8080"
-mvn compile
-mvn spring-boot:run
+git diff feature/create-maintenance-record..feature/list-telemetry-data --name-only
 ```
 
-Swagger: `http://localhost:8080/swagger-ui.html`
+**Probar:** GET/POST `/telemetryData`
 
-### E) Commit con mensaje convencional
+---
+
+### v0.14.0 · `feature/list-alerts` · **Int. 4**
+
+```
+.../monitoring/domain/model/aggregates/FleetAlert.java
+.../monitoring/domain/model/queries/GetAllFleetAlertsQuery.java
+.../monitoring/domain/model/queries/GetFleetAlertByIdQuery.java
+.../monitoring/domain/model/valueobjects/AlertType.java
+.../monitoring/domain/model/valueobjects/AlertSeverity.java
+.../monitoring/domain/repositories/FleetAlertRepository.java
+.../monitoring/application/queryservices/FleetAlertQueryService.java
+.../monitoring/application/internal/queryservices/FleetAlertQueryServiceImpl.java
+.../monitoring/infrastructure/persistence/jpa/   (FleetAlert)
+.../monitoring/interfaces/rest/AlertsController.java    ← solo GET
+.../monitoring/interfaces/rest/resources/AlertResource.java
+.../monitoring/interfaces/rest/transform/MonitoringResourceFromEntityAssembler.java
+```
+
+**Probar:** GET `/alerts`
+
+---
+
+### v0.15.0 · `feature/create-alert` · **Int. 4**
+
+```
+.../monitoring/domain/model/commands/CreateFleetAlertCommand.java
+.../monitoring/domain/model/commands/AcknowledgeFleetAlertCommand.java
+.../monitoring/application/commandservices/FleetAlertCommandService.java
+.../monitoring/application/internal/commandservices/FleetAlertCommandServiceImpl.java
+.../monitoring/application/internal/eventhandlers/MonitoringApplicationReadyEventHandler.java
+.../monitoring/interfaces/rest/resources/CreateAlertResource.java
+.../monitoring/interfaces/rest/AlertsController.java    ← GET+POST
+```
+
+**Probar:** POST `/alerts`
+
+---
+
+### v0.16.0 · `feature/acknowledge-alert` · **Int. 4**
+
+```
+.../monitoring/interfaces/rest/AlertsController.java    ← completo con acknowledge
+```
+
+**Probar:** POST `/alerts/{id}/acknowledgements`
+
+---
+
+### v0.17.0 · `feature/list-worksites` · **Int. 5**
 
 ```powershell
-git add .
-git commit -m "feat(fleet): GET/POST /operators"
+git diff feature/acknowledge-alert..feature/list-worksites --name-only
 ```
 
-### F) Tag anotado (Semantic Versioning) — **por terminal**
+Dominio obras (~28 archivos). **Sin** REST en Swagger aún.
+
+---
+
+### v0.18.0 · `feature/create-staff-members` · **Int. 5**
 
 ```powershell
-git tag -a v0.3.0 -m "v0.3.0 - List and create operators"
-git push origin feature/list-operators
-git push origin v0.3.0
+git diff feature/list-worksites..feature/create-staff-members --name-only
 ```
 
-### G) Pull Request en GitHub
+---
 
-1. Push de la rama (si no lo hicieron en F).
-2. GitHub → **Pull requests** → **New pull request**.
-3. Base: `main` ← Compare: `feature/list-operators`.
-4. Título: `[v0.3.0] feat: list-operators`.
-5. Descripción: endpoints agregados + captura Swagger.
-6. Revisión del Integrante 1 → **Merge**.
+### v0.19.0 · `feature/assign-transport-to-worksite` · **Int. 5**
 
-### H) Release en GitHub — **dos formas**
+```
+.../sitemanagement/domain/model/commands/AssignTransportToWorksiteCommand.java
+.../sitemanagement/application/internal/outboundservices/acl/SiteManagementExternalFleetService.java
+.../sitemanagement/application/internal/eventhandlers/SiteManagementApplicationReadyEventHandler.java
+.../sitemanagement/interfaces/rest/WorksitesController.java
+.../sitemanagement/interfaces/rest/resources/WorksiteTransportResource.java
+.../sitemanagement/interfaces/rest/transform/WorksiteTransportResourceFromEntityAssembler.java
+```
 
-#### Opción 1 — Interfaz web (como pide el profesor)
+**Probar:** todos los endpoints `/worksites` — **release final**.
 
-1. Repo → **Releases** → **Draft a new release**.
-2. **Choose a tag:** `v0.3.0` (seleccionar el tag ya pusheado).
-3. **Target:** `main`.
-4. **Release title:** `v0.3.0 — List operators`.
-5. **Description:**
+---
 
-   ```markdown
-   ## What's new
-   - GET /api/v1/operators
-   - POST /api/v1/operators
+## 7. Merge y Release — paso a paso con roles
 
-   ## How to test
-   mvn spring-boot:run → Swagger UI
-   ```
+**Ejemplo: Integrante 3 entrega v0.8.0**
 
-6. **Publish release**.
+| Paso | Quién | Acción |
+|------|-------|--------|
+| 1 | Int. 3 | Copia archivos, prueba, push `feature/list-machinery` |
+| 2 | Int. 3 | Abre PR en GitHub → base: `main` |
+| 3 | Int. 1 | Revisa PR (compile, Swagger, archivos correctos) |
+| 4 | Int. 1 | Click **Merge pull request** |
+| 5 | Int. 1 | Terminal: `git checkout main && git pull && git tag -a v0.8.0 -m "..." && git push origin v0.8.0` |
+| 6 | Int. 1 | GitHub → Releases → Publish **v0.8.0** |
+| 7 | Int. 3 | Espera; luego empieza v0.9.0 desde `main` actualizado |
 
-#### Opción 2 — Terminal con GitHub CLI
+**Tag por terminal:**
 
 ```powershell
-gh release create v0.3.0 `
-  --title "v0.3.0 — List operators" `
-  --notes "GET/POST /api/v1/operators. Semantic version: minor bump for new feature."
+git tag -a v0.8.0 -m "v0.8.0 - GET /machinery"
+git push origin v0.8.0
 ```
 
-> El profesor suele pedir **tag por terminal** (`git tag -a`) **y** **Release visible en GitHub**. Hagan **ambos**.
+**Release por GitHub:** Releases → Draft new release → tag `v0.8.0` → target `main` → Publish.
 
-### I) Si hay bugfix después del release
+**Release por CLI:** `gh release create v0.8.0 --title "v0.8.0" --notes "GET /machinery"`
+
+---
+
+## 8. Atajo — copiar desde repo referencia
 
 ```powershell
-git checkout -b fix/operator-validation main
-# corregir código
-git commit -m "fix(fleet): validate operator email"
-git tag -a v0.3.1 -m "v0.3.1 - Fix operator validation"
-git push origin fix/operator-validation v0.3.1
-# PR → merge → gh release create v0.3.1
+cd InfraTrack-Referencia
+git checkout feature/sign-up
+
+cd ..\InfraTrack-Backend-Equipo
+git checkout -b feature/sign-up
+git checkout ..\InfraTrack-Referencia\feature\sign-up -- src/
+git add . && git commit -m "feat(iam): sign-up"
 ```
 
-Solo sube **PATCH**, no MINOR.
-
----
-
-## 5. Qué copiar en cada entrega (detalle por integrante)
-
-**Prefijo base de paquetes:**  
-`src/main/java/com/techtitans/infratrack/platform/`
-
-**Recursos compartidos (copiar una sola vez en v0.1.0):**
-
-```
-src/main/resources/application.properties
-src/main/resources/application-dev.properties
-src/main/resources/messages.properties
-src/main/resources/messages_es.properties
-src/test/java/com/techtitans/infratrack/platform/InfraTrackWebServiceApplicationTests.java
-```
-
----
-
-### Integrante 1 — `v0.1.0` · rama `release/0.1.0-shared`
-
-**Rama:**
+O listar diff exacto:
 
 ```powershell
-git checkout main
-git pull
-git checkout -b release/0.1.0-shared
+cd InfraTrack-Referencia
+git diff feature/sign-up..feature/sign-in --name-only
 ```
-
-**Copiar carpetas/archivos:**
-
-```
-src/main/java/com/techtitans/infratrack/platform/shared/          (carpeta completa)
-src/main/java/com/techtitans/infratrack/platform/InfraTrackWebServiceApplication.java
-+ recursos compartidos (arriba)
-```
-
-**Commit y tag:**
-
-```powershell
-git add .
-git commit -m "release: shared platform (errors, i18n, OpenAPI, JPA base)"
-git tag -a v0.1.0 -m "v0.1.0 - Shared platform"
-git push origin release/0.1.0-shared
-git push origin v0.1.0
-```
-
-PR → merge → Release `v0.1.0`.
-
----
-
-### Integrante 2 — `v0.2.0` · rama `feature/sign-up`
-
-**Esperar:** merge de `v0.1.0` en `main`.
-
-**Copiar:**
-
-```
-src/main/java/com/techtitans/infratrack/platform/iam/           (carpeta completa)
-```
-
-**Endpoints nuevos:**  
-`POST /authentication/sign-up`, `POST /authentication/sign-in`, `GET /users`, `GET /roles`
-
-**Tag:** `v0.2.0`  
-**Commit:** `feat(iam): sign-up, sign-in, users, roles and JWT`
-
----
-
-### Integrante 3 — Fleet parte 1
-
-#### Entrega 3a — `v0.3.0` · `feature/list-operators`
-
-**Copiar** (solo estos archivos nuevos):
-
-```
-fleet/application/commandservices/FleetOperatorCommandService.java
-fleet/application/queryservices/FleetOperatorQueryService.java
-fleet/application/internal/commandservices/FleetOperatorCommandServiceImpl.java
-fleet/application/internal/queryservices/FleetOperatorQueryServiceImpl.java
-fleet/domain/model/aggregates/FleetOperator.java
-fleet/domain/model/commands/CreateFleetOperatorCommand.java
-fleet/domain/model/queries/GetAllFleetOperatorsQuery.java
-fleet/domain/model/queries/GetFleetOperatorByIdQuery.java
-fleet/domain/model/valueobjects/OperatorStatus.java
-fleet/domain/repositories/FleetOperatorRepository.java
-fleet/infrastructure/persistence/jpa/entities/FleetOperatorPersistenceEntity.java
-fleet/infrastructure/persistence/jpa/repositories/FleetOperatorPersistenceRepository.java
-fleet/infrastructure/persistence/jpa/adapters/FleetOperatorRepositoryImpl.java
-fleet/infrastructure/persistence/jpa/assemblers/FleetOperatorPersistenceAssembler.java
-fleet/interfaces/rest/OperatorsController.java
-fleet/interfaces/rest/resources/OperatorResource.java
-fleet/interfaces/rest/resources/CreateOperatorResource.java
-fleet/interfaces/rest/transform/OperatorResourceFromEntityAssembler.java
-```
-
-**Tag:** `v0.3.0` · **Endpoints:** `GET/POST /operators`
-
----
-
-#### Entrega 3b — `v0.4.0` · `feature/list-machinery`
-
-**Copiar** (archivos nuevos respecto a v0.3.0):
-
-```
-fleet/.../Machinery.java, CreateMachineryCommand.java, UpdateMachineryCommand.java
-fleet/.../GetAllMachineryQuery.java, GetMachineryByIdQuery.java
-fleet/.../FuelType.java, MachineryStatus.java
-fleet/.../MachineryRepository.java
-fleet/application/.../MachineryCommandService.java, MachineryQueryService.java
-fleet/application/internal/.../MachineryCommandServiceImpl.java, MachineryQueryServiceImpl.java
-fleet/infrastructure/.../MachineryPersistenceEntity.java, MachineryPersistenceRepository.java
-fleet/infrastructure/.../MachineryRepositoryImpl.java, MachineryPersistenceAssembler.java
-fleet/interfaces/rest/MachineryController.java
-fleet/interfaces/rest/resources/MachineryResource.java, CreateMachineryResource.java, UpdateMachineryResource.java
-fleet/interfaces/rest/transform/MachineryResourceFromEntityAssembler.java
-```
-
-**Atajo:**
-
-```powershell
-git diff feature/list-operators..feature/list-machinery --name-only
-```
-
-(Ejecutar en el repo de referencia.)
-
-**Tag:** `v0.4.0` · **Endpoints:** `GET/POST/PUT /machinery`
-
----
-
-#### Entrega 3c — `v0.5.0` · `feature/register-iot-node`
-
-**Copiar:** diff `feature/list-machinery..feature/register-iot-node` (18 archivos IotNode).
-
-**Tag:** `v0.5.0` · **Endpoints:** `GET/POST /iotNodes`, link a machinery
-
----
-
-### Integrante 4 — Fleet + Monitoring
-
-#### Entrega 4a — `v0.6.0` · `feature/create-maintenance-record`
-
-**Copiar:** diff `feature/register-iot-node..feature/create-maintenance-record`
-
-Incluye además:
-
-```
-fleet/application/acl/                                          (carpeta)
-fleet/interfaces/acl/                                           (carpeta)
-fleet/application/internal/eventhandlers/FleetApplicationReadyEventHandler.java
-```
-
-**Tag:** `v0.6.0` · **Endpoints:** `GET/POST /maintenanceRecords`
-
----
-
-#### Entrega 4b — `v0.7.0` · `feature/list-telemetry-data`
-
-**Copiar:** diff `feature/create-maintenance-record..feature/list-telemetry-data`
-
-Incluye carpeta:
-
-```
-monitoring/application/internal/outboundservices/               (carpeta completa)
-```
-
-**Tag:** `v0.7.0` · **Endpoints:** `GET/POST /telemetryData`
-
----
-
-#### Entrega 4c — `v0.8.0` · `feature/create-alert`
-
-**Copiar:** diff `feature/list-telemetry-data..feature/create-alert`
-
-Incluye:
-
-```
-monitoring/application/internal/eventhandlers/MonitoringApplicationReadyEventHandler.java
-```
-
-**Tag:** `v0.8.0` · **Endpoints:** `GET/POST /alerts`, acknowledge
-
----
-
-### Integrante 5 — Site Management
-
-#### Entrega 5a — `v0.9.0` · `feature/list-worksites`
-
-**Copiar:** diff `feature/create-alert..feature/list-worksites` (28 archivos sitemanagement).
-
-**Tag:** `v0.9.0` · Dominio obras (sin REST aún)
-
----
-
-#### Entrega 5b — `v0.10.0` · `feature/create-staff-members`
-
-**Copiar:** diff `feature/list-worksites..feature/create-staff-members` (18 archivos staff).
-
-**Tag:** `v0.10.0`
-
----
-
-#### Entrega 5c — `v0.11.0` · `feature/assign-transport-to-worksite`
-
-**Copiar:** diff `feature/create-staff-members..feature/assign-transport-to-worksite`:
-
-```
-sitemanagement/application/internal/eventhandlers/SiteManagementApplicationReadyEventHandler.java
-sitemanagement/application/internal/outboundservices/acl/SiteManagementExternalFleetService.java
-sitemanagement/domain/model/commands/AssignTransportToWorksiteCommand.java
-sitemanagement/interfaces/rest/WorksitesController.java
-sitemanagement/interfaces/rest/resources/WorksiteTransportResource.java
-sitemanagement/interfaces/rest/transform/WorksiteTransportResourceFromEntityAssembler.java
-```
-
-**Tag:** `v0.11.0` · **REST completo** `/worksites` en Swagger
-
----
-
-## 6. Atajo: listar archivos exactos con git
-
-En el **repo de referencia** (donde ya están todas las ramas):
-
-```powershell
-git diff feature/sign-up..feature/list-operators --name-only
-```
-
-Cambia las dos ramas por la pareja anterior → siguiente de la tabla de versiones.
-
----
-
-## 7. Checklist antes de cada PR (todos)
-
-- [ ] Rama con nombre de endpoint (`feature/list-operators`, no `feature/fleet`)
-- [ ] Solo archivos de **esta** versión (+ lo que ya está en `main`)
-- [ ] `mvn compile` sin errores
-- [ ] App arranca (`mvn spring-boot:run`)
-- [ ] Endpoint(s) nuevo(s) visibles en Swagger
-- [ ] `.env` **no** commiteado
-- [ ] Tag anotado: `git tag -a v0.x.0 -m "..."`
-- [ ] Tag pusheado: `git push origin v0.x.0`
-- [ ] PR abierto y mergeado a `main`
-- [ ] **GitHub Release** publicado para ese tag
-
----
-
-## 8. Flujo visual del equipo
-
-```
-Integrante 1:  [bootstrap] → [v0.1.0 shared] ──PR──► main ──Release──► GitHub v0.1.0
-Integrante 2:                    [v0.2.0 sign-up] ──PR──► main ──Release──► v0.2.0
-Integrante 3:                         [v0.3.0] ──PR──► main ──Release──► v0.3.0
-                                      [v0.4.0] ──PR──► main ──Release──► v0.4.0
-                                      [v0.5.0] ──PR──► main ──Release──► v0.5.0
-Integrante 4:                              [v0.6.0] … [v0.8.0]  (igual patrón)
-Integrante 5:                                        [v0.9.0] … [v0.11.0]
-```
-
-**Importante:** no mergear `v0.5.0` antes de que `v0.4.0` esté en `main`. El orden importa.
 
 ---
 
@@ -541,29 +544,34 @@ $env:PORT="8080"
 mvn spring-boot:run
 ```
 
-- API: `http://localhost:8080/api/v1`
-- Swagger: `http://localhost:8080/swagger-ui.html`
-
-En versiones tempranas (`v0.1.0`, `v0.2.0`) solo aparecen los endpoints de esa etapa.
+Swagger: `http://localhost:8080/swagger-ui.html`
 
 ---
 
-## 10. Resumen rápido
+## 10. Checklist y resumen
+
+**Antes de cada PR:**
+
+- [ ] Main tiene merge anterior
+- [ ] Solo archivos de esta entrega
+- [ ] `mvn compile` OK
+- [ ] Swagger probado
+- [ ] PR mergeado por Int. 1
+- [ ] Tag + Release publicados
 
 | Pregunta | Respuesta |
 |----------|-----------|
-| ¿Por dónde empezamos? | Integrante 1 crea repo vacío + bootstrap |
-| ¿De dónde copiamos? | Repo de referencia (`main` o ramas feature) |
-| ¿Cómo sabemos qué archivos? | Sección 5 o `git diff rama-anterior..rama-nueva --name-only` |
-| ¿Cuándo tag? | Después del commit, **antes o después del PR** (tag en la rama feature) |
-| ¿Terminal + GitHub? | `git tag -a v0.x.0` + push tag + **Publish release** en GitHub |
-| ¿Semantic versioning? | MINOR sube con cada feature (`v0.3.0` → `v0.4.0`); PATCH solo bugs (`v0.3.1`) |
-| ¿Cuántos somos? | 5 — tabla sección 2 |
+| ¿Qué subo en cada rama? | Archivos de sección 6 para **esa** versión |
+| ¿Merge o Release? | **Merge primero**, Release después |
+| ¿Quién mergea? | **Integrante 1** |
+| ¿Quién Release? | **Integrante 1** |
+| ¿Funcional? | **Sí** siguiendo orden + MySQL |
+| ¿Cuántas releases? | **19** (v0.1.0 … v0.19.0) |
 
 ---
 
 ## Documentos relacionados
 
-- [`feature-release-plan.md`](feature-release-plan.md) — mapa release ↔ rama ↔ endpoints
-- [`bounded-contexts-guide.md`](bounded-contexts-guide.md) — capas DDD
-- [`user-stories.md`](user-stories.md) — historias técnicas API
+- [`feature-release-plan.md`](feature-release-plan.md)
+- [`bounded-contexts-guide.md`](bounded-contexts-guide.md)
+- [`user-stories.md`](user-stories.md)
